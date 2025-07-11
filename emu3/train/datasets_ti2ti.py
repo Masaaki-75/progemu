@@ -32,6 +32,7 @@ class ProgEmuDataset(Dataset):
         self.bov = tokenizer.encode(vis_tok_patn.format(token_id=0))[0]
         self.eov = tokenizer.encode(vis_tok_patn.format(token_id=codebook_size - 1))[0]
         self.bos_token_id = tokenizer(tokenizer.bos_token)['input_ids'][0]
+        self.boi_token_id = tokenizer(tokenizer.boi_token)['input_ids'][0]
         self.img_token_id = tokenizer.special_tokens[tokenizer.img_token]
         self.pad_token_id = tokenizer.pad_token_id
         self.eoi_token_id = tokenizer(tokenizer.eoi_token)['input_ids'][0]
@@ -114,9 +115,6 @@ class ProgEmuDataset(Dataset):
         bos_token = self.tokenizer.bos_token
         prompt_template = self.prompt_template
         only_output_vision = self.args.apply_loss_on_only_vision or (output_text_prompt is None)
-
-        # if only_output_vision:
-        #     output_text_prompt = ""
         
         input_text_prompt = self.augment_sentences(input_text_prompt, self.shuffle_sentence_prob, self.dropneg_sentence_prob)
         
@@ -175,75 +173,47 @@ class ProgEmuDataset(Dataset):
         for k, v in sample.items():
             sample[k] = v.squeeze(0)
         labels = sample["input_ids"]
-        mask = self.get_target_mask_v2(labels)
+        mask = self.get_target_mask(labels)
         sample['labels'] = torch.where(mask, labels, self.args.ignore_index)
         sample['are_image_ids'] = torch.logical_and(labels >= self.bov, labels <= self.eov)
         return sample
-    
     def get_target_mask(self, token_sequence: torch.Tensor):
-        """
-        Mask all input images and texts and padding tokens.
-        Given an input sequence:
-        {bos_token_id}{boi_token_id}{meta_text_token_ids}{content_start_token_id}{source_image_token_ids}{eof_token_id}{eoi_token_id}{source_text_token_ids}{boi_token_id}{meta_text_token_ids}{content_start_token_id}{target_image_token_ids}{eof_token_id}{eoi_token_id}{target_text_token_ids}{pad_token_ids}
-        """
-        img_token_id = self.img_token_id
-        pad_token_id = self.pad_token_id
-
-        # Find all positions of the img_token_id
-        img_token_id_positions = (token_sequence == img_token_id).nonzero(as_tuple=False).flatten()
-        assert len(img_token_id_positions) >= 1
-        target_start_idx = (img_token_id_positions[-1]+1).item()
-
-        # Find the end of the target tokens (i.e., the start of padding or the end of the sequence)
-        padding_start_positions = (token_sequence == pad_token_id).nonzero(as_tuple=False).flatten()
-        if len(padding_start_positions) > 0:
-            target_end_idx = (padding_start_positions[0]).item()
-        else:
-            target_end_idx = len(token_sequence)
-        #target_end_idx += 1  # to learn one <endoftext>
-
-        # Create the mask: 1 for target_image_token_ids and target_text_token_ids, 0 otherwise
-        mask = torch.zeros_like(token_sequence, dtype=torch.int)
-        mask[target_start_idx:target_end_idx] = 1
-        return mask.to(bool)
-    
-
-    def get_target_mask_v2(self, token_sequence: torch.Tensor):
         """
         Mask output image or text.
         Given an input sequence:
-        {bos_token_id}{boi_token_id}{meta_text_token_ids}{content_start_token_id}{source_image_token_ids}{eof_token_id}{eoi_token_id}{source_text_token_ids}{boi_token_id}{meta_text_token_ids}{content_start_token_id}{target_image_token_ids}{eof_token_id}{eoi_token_id}{target_text_token_ids}{pad_token_ids}
+        {bos_token}{boi_token}{meta_text_token}{img_token}{source_image_tokens}{eof_token}{eoi_token}{source_text_tokens}{boi_token}{meta_text_tokens}{img_token}{target_image_tokens}{eof_token}{eoi_token}{target_text_tokens}{pad_tokens}
         """
+        boi_token_id = self.boi_token_id
         img_token_id = self.img_token_id
         pad_token_id = self.pad_token_id
         eoi_token_id = self.eoi_token_id
         eof_token_id = self.eof_token_id
-        #apply_loss_on_both = (not self.args.apply_loss_on_only_text) and (not self.args.apply_loss_on_only_vision)
 
         if self.args.apply_loss_on_only_text:
             eoi_token_id_positions = (token_sequence == eoi_token_id).nonzero(as_tuple=False).flatten()
             assert len(eoi_token_id_positions) >= 1
-            target_start_idx = (eoi_token_id_positions[-1]+1).item()
-        else:
-            img_token_id_positions = (token_sequence == img_token_id).nonzero(as_tuple=False).flatten()
-            assert len(img_token_id_positions) >= 1
-            target_start_idx = (img_token_id_positions[-1]+1).item()
-
-        if self.args.apply_loss_on_only_vision:
-            eof_token_id_positions = (token_sequence == eof_token_id).nonzero(as_tuple=False).flatten()
-            assert len(eof_token_id_positions) >= 1
-            target_end_idx = (eof_token_id_positions[-1]-1).item()
-        else:
+            boi_token_id_positions = (token_sequence == boi_token_id).nonzero(as_tuple=False).flatten()
+            assert len(boi_token_id_positions) >= 1
             padding_start_positions = (token_sequence == pad_token_id).nonzero(as_tuple=False).flatten()
+            
+            target_start_idx1 = (eoi_token_id_positions[0]+1).item()
+            target_end_idx1 = (boi_token_id_positions[-1]-1).item()
+            target_start_idx2 = (eoi_token_id_positions[-1]+1).item()
             if len(padding_start_positions) > 0:
-                target_end_idx = (padding_start_positions[0]).item()
+                target_end_idx2 = (padding_start_positions[0]).item()
             else:
-                target_end_idx = len(token_sequence)
-            #target_end_idx += 1  # to learn one <endoftext>
-
-        # Create the mask: 1 for target_image_token_ids and target_text_token_ids, 0 otherwise
-        mask = torch.zeros_like(token_sequence, dtype=torch.int)
-        mask[target_start_idx:target_end_idx] = 1
+                target_end_idx2 = len(token_sequence)
+            
+            mask = torch.zeros_like(token_sequence, dtype=torch.int)
+            mask[target_start_idx1:target_end_idx1] = 1
+            mask[target_start_idx2:target_end_idx2] = 1
+            
+        elif self.args.apply_loss_on_only_vision:
+            mask = torch.logical_and(token_sequence >= self.bov, token_sequence <= self.eov)
+        
+        else:
+            mask = torch.ones_like(token_sequence, dtype=torch.int)
+            
         return mask.to(bool)
 
     def format_image_prompt(self, image_tokens):
