@@ -23,10 +23,10 @@ from emu3.train.datasets_ti2ti import ProgEmuDataset
 from emu3.mllm.modeling_ti2ti import Emu3ForCausalLM
 
 
-WORKSPACE="/inspire/ssd/ws-c6f77a66-a5f5-45dc-a4ce-1e856fe7a7b4/project/public/pjlab-lingjun-gmai/clma/myemu3"
-DATA_ROOT="/inspire/hdd/ws-c6f77a66-a5f5-45dc-a4ce-1e856fe7a7b4/project/public/clmanew"
+WORKSPACE="path/to/progemu/workspace"
+DATA_ROOT="root/directory/of/data"
 TOK_HUB = os.path.join(WORKSPACE, 'weights/stage1')
-VQ_HUB = os.path.join(WORKSPACE, 'weights/visiontokenizer') #"/mnt/petrelfs/yejin/clma/emu3/weights
+VQ_HUB = os.path.join(WORKSPACE, 'weights/visiontokenizer')
 DEFAULT_EMU_HUB = os.path.join(WORKSPACE, 'weights/stage1')
 NEGATIVE_PROMPT = ""
 
@@ -153,7 +153,7 @@ def prepare_config(model, do_sample=True):
             use_cache=True,
             eos_token_id=model.config.eos_token_id,
             pad_token_id=model.config.pad_token_id,
-            max_new_tokens=9216,#model.config.max_position_embeddings,#40960,
+            max_new_tokens=9216, #model.config.max_position_embeddings,#40960,
             do_sample=True,
             top_k=2048)
     else:
@@ -161,7 +161,7 @@ def prepare_config(model, do_sample=True):
             use_cache=True,
             eos_token_id=model.config.eos_token_id,
             pad_token_id=model.config.pad_token_id,
-            max_new_tokens=9216,#model.config.max_position_embeddings,#40960,
+            max_new_tokens=9216, #model.config.max_position_embeddings,#40960,
             do_sample=False,)
 
 def get_proc_prefix(use_pc_proc, use_cfg_proc, cfg):

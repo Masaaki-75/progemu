@@ -34,7 +34,6 @@ class Emu3PrefixConstrainedLogitsHelper:
 
     def __call__(self, batch_id, input_ids):
         if batch_id not in self.offset_cache:
-            # 这里nonzero取了第一个, 得改. 因为input_ids里面的输入部分已经有一个img_token了. 
             position = torch.nonzero(input_ids == self.img_token, as_tuple=True)[0][1]
             self.offset_cache[batch_id] = position
 
@@ -45,19 +44,18 @@ class Emu3PrefixConstrainedLogitsHelper:
         # height = height.to(offset.device)
         # width = width.to(offset.device)
 
-        if offset % (width + 1) == 0:  # 到了一行的结尾
+        if offset % (width + 1) == 0:  # we are now at the end of a row
             return (self.eol_token, )
-        elif offset == (width + 1) * height + 1:  # 到了一张图的结尾
+        elif offset == (width + 1) * height + 1:  # we are now at the end of an image
             return (self.eof_token, )
-        elif offset == (width + 1) * height + 2:  # 到了一张图的结尾再过一个eof
+        elif offset == (width + 1) * height + 2:  # at the end of an image and an <eof> token
             return (self.eoi_token, )
-        elif (offset >= (width + 1) * height + 3) and (offset <= (width + 1) * height + 4):  # 到了一张图的结尾过一个eof和eoi
+        elif (offset >= (width + 1) * height + 3) and (offset <= (width + 1) * height + 4):  # <eof> and <eoi>
             if self.only_output_vision:
                 return (self.eos_token, )
             else:
                 return self.textual_tokens
         elif (offset >= (width + 1) * height + 5) and (offset <= (width + 1) * height + 200):
-            # 这里可以修改? 我感觉如果文本之后有个特殊token就好了. 不然文本长度不确定就不好pad了. 
             if self.only_output_vision:
                 return (self.eos_token, )
             else:
