@@ -46,11 +46,11 @@ icg-cxr-v1
 - **File Organization:** Each patient folder contains one or multiple study-pair folder(s), where each study pair includes a JSON file (`i${UU}s${XXXX}-i${VV}s${YYYY}.json`), a prior CXR image file (`i${UU}s${XXXX}-i${VV}s${YYYY}-ref-reg.json`), and a subsequent CXR image file (`i${UU}s${XXXX}-i${VV}s${YYYY}-flu-reg.json`). Here, `${UU}` and `${VV}` represent the order of the prior and subsequent study in a longitudinal CXR examination of a certain patient, respectively. `${XXXX}` and `${YYYY}` denote the prior and subsequent study IDs, respectively. Each JSON file contains the disease progression summary, the radiological interpretations, as well as other metadata (e.g., time-interval between two studies, de-identified subject ID, study IDs, DICOM IDs, etc.)
 - **Volume:** 11,439 curated data quadruples from 7,388 unique patients.
 - **Components per Quadruple:**
-  1. **Prior CXR image** (reference, 512 × 512 PNG)
-  2. **Subsequent CXR image** (follow-up, 512 × 512 PNG)
-  3. **Progression prompt** (plain-text)
-  4. **Interpretation text** (plain-text)
-- Related Data Processing Code:
+  - **Prior CXR image** (reference, 512 × 512 PNG)
+  - **Subsequent CXR image** (follow-up, 512 × 512 PNG)
+  - **Progression prompt** (plain-text)
+  - **Interpretation text** (plain-text)
+- **Related Data Processing Code**:
   - `process_chexpertplus.ipynb`: a walkthrough for accessing, rearranging, and preprocessing CXR data in the CheXpertPlus dataset.
   - `register_chexpertplus.py`: an independent python script to efficiently register the CheXpertPlus CXR images in all the study pairs.
   - `recon_metrics.py`: contains useful functions required by `register_chexpertplus.py`.
