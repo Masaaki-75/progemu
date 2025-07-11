@@ -18,8 +18,7 @@ OUTPUT_DIR="logs/${EXP_NAME}"
 MODEL_PATH="weights/gen"
 TOKENIZER_PATH="weights/gen"
 
-USE_TEMPLATE=False
-NUM_TRAIN_EPOCHS=20
+NUM_TRAIN_EPOCHS=30
 BS_PER_GPU=1
 GRAD_ACCUM_STEPS=16
 SAVE_STEPS=200
@@ -39,9 +38,10 @@ torchrun \
     --deepspeed scripts/zero3.json \
     --log_level info \
     --data_path ${DATA_PATH} \
-    --use_template ${USE_TEMPLATE} \
     --use_registered True \
     --null_prompt_prob 0.01 \
+    --shuffle_sentence_prob 0.05 \
+    --dropneg_sentence_prob 0.05 \
     --apply_loss_on_only_vision False \
     --apply_loss_on_only_text False \
     --image_area 262144 \
