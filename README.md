@@ -57,6 +57,9 @@ icg-cxr-v1
 > [!WARNING] 
 > To facilitate broad research use while respecting existing licensing constraints of two source datasets, we have included preprocessing scripts that guide users to download and preprocess the original data. This allows users to obtain the complete ICG-CXR dataset. 
 
+## Training & Inference
+Example training and inference scripts are provided in the `scripts` folder. After modifying the data paths and arguments, you can simply run the scripts with `bash scripts/init.sh` and `bash scripts/infer.sh`.
+
 
 ## Acknowledgements 🙏
 This project is inspired by / built upon other awesome works [MIMIC-CXR](https://www.nature.com/articles/s41597-019-0322-0), [CheXpertPlus](https://arxiv.org/abs/2405.19538), [BiomedJourney](https://microsoft.github.io/BiomedJourney/), [Emu3](https://emu.baai.ac.cn/about), [MIMIC-Diff-VQA](https://arxiv.org/abs/2307.11986) ... Please do check them out!
