@@ -1,5 +1,7 @@
 # ProgEmu: Towards Interpretable Counterfactual Generation via Multimodal Autoregression
 
+![](./assets/overview.png)
+
 This repository contains the code for the MICCAI'25 paper: Towards Interpretable Counterfactual Generation via Multimodal Autoregression ([arxiv](https://arxiv.org/abs/2503.23149), [homepage](https://progemu.github.io/))
 
 ## Highlights 💡
