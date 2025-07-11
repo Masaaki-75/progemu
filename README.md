@@ -60,8 +60,8 @@ icg-cxr-v1
 
 
 ## Data Preprocessing
-- Registration: Please follow `register_chexpertplus.py` for registering the prior and subsequent CXR images.
-- Tokenization: Since Emu3-series models work on discrete image token IDs, we will need to tokenize all images before we launch the training (Online image tokenization is very inefficient). Once all CXR images are ready and are stored as the above file structure, we can perform offline image tokenization by running `bash scripts/vq.sh` (Remember to set the correct arguments).
+- **Registration**: Please follow `register_chexpertplus.py` for registering the prior and subsequent CXR images.
+- **Tokenization**: Since Emu3-series models work on discrete image token IDs, we will need to tokenize all images before we launch the training (Online image tokenization is very inefficient). Once all CXR images are ready and are stored as the above file structure, we can perform offline image tokenization by running `bash scripts/vq.sh` (Remember to set the correct arguments).
 
 
 
