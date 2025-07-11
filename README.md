@@ -4,6 +4,7 @@
 
 This repository contains the code for the MICCAI'25 paper: Towards Interpretable Counterfactual Generation via Multimodal Autoregression ([arxiv](https://arxiv.org/abs/2503.23149), [homepage](https://progemu.github.io/))
 
+
 ## Highlights 💡
 - **Interpretable Counterfactual Generation (ICG)**: Jointly produces a counterfactual CXR image and a concise interpretation text that pinpoints progression-induced visual changes. 
 - **ICG-CXR Dataset**: Over 10k longitudinal CXR quadruples (prior image, prompt, subsequent image, interpretation) that supports ICG task. 
@@ -56,6 +57,13 @@ icg-cxr-v1
 
 > [!WARNING] 
 > To facilitate broad research use while respecting existing licensing constraints of two source datasets, we have included preprocessing scripts that guide users to download and preprocess the original data. This allows users to obtain the complete ICG-CXR dataset. 
+
+
+## Data Preprocessing
+- Registration: Please follow `register_chexpertplus.py` for registering the prior and subsequent CXR images.
+- Tokenization: Since Emu3-series models work on discrete image token IDs, we will need to tokenize all images before we launch the training (Online image tokenization is very inefficient). Once all CXR images are ready and are stored as the above file structure, we can perform offline image tokenization by running `bash scripts/vq.sh` (Remember to set the correct arguments).
+
+
 
 ## Training & Inference
 Example training and inference scripts are provided in the `scripts` folder. After modifying the data paths and arguments, you can simply run the scripts with `bash scripts/init.sh` and `bash scripts/infer.sh`.
