@@ -10,7 +10,7 @@ OUTPUT_DIR="logs/${EXP_NAME}"
 MODEL_PATH="path/to/your/model"
 
 
-python run_inference.py \
+python infer_progemu.py \
     --model_path ${MODEL_PATH} \
     --meta_path ${DATA_PATH} \
     --output_dir ${OUTPUT_DIR} \
