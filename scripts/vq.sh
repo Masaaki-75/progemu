@@ -8,7 +8,7 @@ IMAGE_DIR="directory/to/icg-cxr-v1"
 MODEL_PATH="${WORKSPACE}/weights/visiontokenizer"
 
 
-python run_inference.py \
+python infer_vq.py \
     --model_path ${MODEL_PATH} \
     --image_dir ${IMAGE_DIR} \
     --ext '.png' 
