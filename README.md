@@ -2,7 +2,7 @@
 
 ![](./assets/overview.png)
 
-This repository contains the code for the MICCAI'25 paper: Towards Interpretable Counterfactual Generation via Multimodal Autoregression ([arxiv](https://arxiv.org/abs/2503.23149), [homepage](https://progemu.github.io/), [model](https://huggingface.co/massaki75/progemu/tree/main))
+This repository contains the code for the MICCAI'25 paper: Towards Interpretable Counterfactual Generation via Multimodal Autoregression ([arxiv](https://arxiv.org/abs/2503.23149), [homepage](https://progemu.github.io/), [model](https://huggingface.co/massaki75/progemu/tree/main)). Supported by Shanghai Innovation Institute (SII).
 
 
 ## Highlights 💡
